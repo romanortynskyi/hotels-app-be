@@ -2,6 +2,7 @@
 const { Model } = require('sequelize')
 
 const { ROLE_ENUM } = require('~/consts/enums')
+const { USER } = require('~/consts')
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
@@ -30,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     role: {
       type: DataTypes.ENUM(...ROLE_ENUM),
-      defaultValue: ROLE_ENUM[0],
+      defaultValue: USER,
     },
     recoveryCode: {
       type: DataTypes.STRING,

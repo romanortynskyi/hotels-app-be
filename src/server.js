@@ -11,9 +11,12 @@ const express = require('express')
 const http = require('http')
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const { makeExecutableSchema } = require('@graphql-tools/schema')
+const { applyMiddleware } = require('graphql-middleware')
 
 const typeDefs = require('./type-defs')
 const resolvers = require('./resolvers')
+const permissions = require('./permissions')
 const userService = require('./modules/user/user.service')
 const { PORT } = require('./configs')
 const initializeFirebase = require('./initialize-firebase')
@@ -34,9 +37,13 @@ const main = async () => {
   const app = express()
   const httpServer = http.createServer(app)
   
+  const schema = makeExecutableSchema({ typeDefs, resolvers })
+
+  const schemaWithPermissions = applyMiddleware(schema, permissions)
+
   const server = new ApolloServer({
     typeDefs,
-    resolvers,
+    schema: schemaWithPermissions,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   })
   
@@ -51,8 +58,8 @@ const main = async () => {
     }),
     bodyParser.json(),
     expressMiddleware(server, {
-      context: ({ req }) => ({
-        user: userService.getUserByToken(req.headers.authorization)
+      context: async ({ req }) => ({
+        user: await userService.getUserByToken(req.headers.authorization)
       }),
     }),
   )

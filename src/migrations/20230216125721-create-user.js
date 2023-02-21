@@ -2,6 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 
 const { ROLE_ENUM } = require('../consts/enums')
+const { USER } = require('../consts')
 
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -30,7 +31,7 @@ module.exports = {
       },
       role: {
         type: Sequelize.ENUM(...ROLE_ENUM),
-        defaultValue: ROLE_ENUM[0],
+        defaultValue: USER,
         allowNull: false,
       },
       recoveryCode: {

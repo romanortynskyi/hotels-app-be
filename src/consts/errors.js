@@ -53,6 +53,16 @@ const ROOM_NOT_FOUND = {
   message: 'Room with the specified id does not exist.',
 }
 
+const USER_NOT_AUTHORIZED  = {
+  code: 'USER_NOT_AUTHORIZED',
+  message: 'User not authorized.'
+}
+
+const INVALID_PERMISSIONS = {
+  code: 'INVALID_PERMISSIONS',
+  message: 'Invalid permissions.'
+}
+
 module.exports = {
   USER_ALREADY_EXISTS,
   INCORRECT_CREDENTIALS,
@@ -65,4 +75,6 @@ module.exports = {
   CITY_NOT_FOUND,
   HOTEL_NOT_FOUND,
   ROOM_NOT_FOUND,
+  USER_NOT_AUTHORIZED,
+  INVALID_PERMISSIONS,
 }
