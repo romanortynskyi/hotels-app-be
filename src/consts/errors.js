@@ -53,14 +53,14 @@ const ROOM_NOT_FOUND = {
   message: 'Room with the specified id does not exist.',
 }
 
-const USER_NOT_AUTHORIZED  = {
-  code: 'USER_NOT_AUTHORIZED',
+const UNAUTHORIZED  = {
+  code: 'UNAUTHORIZED',
   message: 'User not authorized.'
 }
 
-const INVALID_PERMISSIONS = {
-  code: 'INVALID_PERMISSIONS',
-  message: 'Invalid permissions.'
+const FORBIDDEN = {
+  code: 'FORBIDDEN',
+  message: 'Forbidden.'
 }
 
 module.exports = {
@@ -75,6 +75,6 @@ module.exports = {
   CITY_NOT_FOUND,
   HOTEL_NOT_FOUND,
   ROOM_NOT_FOUND,
-  USER_NOT_AUTHORIZED,
-  INVALID_PERMISSIONS,
+  UNAUTHORIZED,
+  FORBIDDEN,
 }
