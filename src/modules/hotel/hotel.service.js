@@ -206,6 +206,7 @@ const hotelService = {
         "hotel"."id" AS id,
         "hotel"."name" AS name,
         "hotel"."description" AS description,
+        "city"."id" AS "city.id",
         "city"."name" AS "city.name",
         "city"."CountryId" AS "city.countryId",
         MIN("room"."kidPrice") AS "minKidPrice",
