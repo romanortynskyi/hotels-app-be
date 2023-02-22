@@ -1,12 +1,14 @@
 const Joi = require('joi')
 
+const idValidator = require('./id.validator')
+
 const addCityValidator = Joi.object({
-  countryId: Joi.number().integer().min(1).required(),
+  countryId: idValidator,
   name: Joi.string().required(),
 })
 
 const updateCityValidator = Joi.object({
-  countryId: Joi.number().integer().min(1).required(),
+  countryId: idValidator,
   name: Joi.string().required(),
 })
 

@@ -1,13 +1,15 @@
 const Joi = require('joi')
 
+const idValidator = require('./id.validator')
+
 const addHotelValidator = Joi.object({
-  cityId: Joi.number().integer().min(1).required(),
+  cityId: idValidator,
   name: Joi.string().required(),
   description: Joi.string().required(),
 })
 
 const updateHotelValidator = Joi.object({
-  cityId: Joi.number().integer().min(1).required(),
+  cityId: idValidator,
   name: Joi.string().required(),
   description: Joi.string().required(),
 })
