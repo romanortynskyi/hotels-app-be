@@ -15,6 +15,6 @@ const permissions = shield({
     ...cityMutationPermissions,
     ...hotelMutationPermissions,
   },
-})
+}, { allowExternalErrors: true })
 
 module.exports = permissions

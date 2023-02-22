@@ -10,7 +10,7 @@ const cityQueryPermissions = {
 
 const cityMutationPermissions = {
   addCity: and(hasRoles([ADMIN]), inputValidation(addCityValidator)),
-  updateCity: and(hasRoles([ADMIN]), inputValidation(updateCityValidator)),
+  updateCity: and(hasRoles([ADMIN]), idValidation, inputValidation(updateCityValidator)),
   deleteCity: and(hasRoles([ADMIN]), idValidation),
 }
 

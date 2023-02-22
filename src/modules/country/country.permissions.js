@@ -10,7 +10,7 @@ const countryQueryPermissions = {
 
 const countryMutationPermissions = {
   addCountry: and(hasRoles([ADMIN]), inputValidation(addCountryValidator)),
-  updateCountry: and(hasRoles([ADMIN]), inputValidation(updateCountryValidator)),
+  updateCountry: and(hasRoles([ADMIN]), idValidation, inputValidation(updateCountryValidator)),
   deleteCountry: and(hasRoles([ADMIN]), idValidation),
 }
 
