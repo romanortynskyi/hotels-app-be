@@ -40,20 +40,19 @@ const userService = {
     const transaction = await sequelize.transaction()
 
     try {
-      let imageResponse
+      let imageResponse, userImage
 
       if (image) {
         imageResponse = await uploadService.uploadFile(image.file, USER_IMAGES)
+        userImage = await Image.create(imageResponse, { transaction })
       }
-
-      const userImage = await Image.create(imageResponse, { transaction })
 
       const user = await User.create({
         email,
         password: hashedPassword,
         firstName,
         lastName,
-        ImageId: userImage.id,
+        ImageId: userImage?.id || null,
       }, { transaction })
 
       const userToSend = {
@@ -77,7 +76,7 @@ const userService = {
       }
     }
 
-    catch(error) {
+    catch(error) {console.log(error)
       await transaction.rollback()
       throw createError(INTERNAL_SERVER_ERROR)
     }

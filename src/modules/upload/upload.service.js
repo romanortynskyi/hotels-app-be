@@ -5,7 +5,7 @@ const { v4: uuid } = require('uuid')
 const { BUCKET_URL } = require('~/configs')
 
 const uploadService = {
-  uploadFile: async (file, directory) => {
+  uploadFile: async (file, directory) => {console.log(file)
     const { createReadStream, filename: originalName } = file
 
     const bucket = firebase.storage().bucket(BUCKET_URL)

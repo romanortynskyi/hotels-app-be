@@ -7,7 +7,7 @@ const {
   DATABASE_HOST,
   DATABASE_DIALECT,
 } = require('./configs')
-
+console.log(DATABASE_DIALECT)
 const sequelize = new Sequelize(DATABASE_NAME, DATABASE_USERNAME, DATABASE_PASSWORD, {
   host: DATABASE_HOST,
   dialect: DATABASE_DIALECT,
