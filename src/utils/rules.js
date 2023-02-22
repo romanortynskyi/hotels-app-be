@@ -34,6 +34,7 @@ const hasRoles = roles =>
   ) 
 
 module.exports = {
+  isAuthorized,
   dataValidation,
   inputValidation,
   idValidation,

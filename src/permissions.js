@@ -5,6 +5,7 @@ const { cityQueryPermissions, cityMutationPermissions } = require('./modules/cit
 const { hotelQueryPermissions, hotelMutationPermissions } = require('./modules/hotel/hotel.permissions')
 const { reservationQueryPermissions, reservationMutationPermissions } = require('./modules/reservation/reservation.permissions')
 const { roomQueryPermissions, roomMutationPermissions } = require('./modules/room/room.permissions')
+const { userQueryPermissions, userMutationPermissions } = require('./modules/user/user.permissions')
 
 const permissions = shield({
   Query: {
@@ -13,6 +14,7 @@ const permissions = shield({
     ...hotelQueryPermissions,
     ...reservationQueryPermissions,
     ...roomQueryPermissions,
+    ...userQueryPermissions,
   },
   Mutation: {
     ...countryMutationPermissions,
@@ -20,6 +22,7 @@ const permissions = shield({
     ...hotelMutationPermissions,
     ...reservationMutationPermissions,
     ...roomMutationPermissions,
+    ...userMutationPermissions,
   },
 }, { allowExternalErrors: true })
 
