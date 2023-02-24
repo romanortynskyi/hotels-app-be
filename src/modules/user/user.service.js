@@ -131,7 +131,7 @@ const userService = {
       image: userImage,
     }
 
-    const token = jwt.sign(userToSend, JWT_SECRET)
+    const token = jwt.sign(userToSend, process.env.JWT_SECRET)
 
     return {
       ...userToSend,

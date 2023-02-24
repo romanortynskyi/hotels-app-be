@@ -4,12 +4,14 @@ const uploadService = require('~/modules/upload/upload.service')
 const {
   USER_ALREADY_EXISTS,
   INTERNAL_SERVER_ERROR,
+  INCORRECT_CREDENTIALS,
 } = require('~/consts/errors')
 
 const setupApp = require('../../setup-app')
 const serverCleanup = require('../../server-cleanup')
 const {
   signUp,
+  login,
 } = require('./user.helper')
 const dbCleanup = require('../../db-cleanup')
 const {
@@ -25,6 +27,9 @@ const testUser = {
   email: 'vasya@gmail.com',
   password: '123123'
 }
+
+const wrongEmail = 'email@gmail.com'
+const wrongPassword = 'password'
 
 describe('user mutations', () => {
   let server
@@ -136,6 +141,94 @@ describe('user mutations', () => {
         .attach('0', 'tests/test-image.jpg')
 
       expectError(response, INTERNAL_SERVER_ERROR)
+    })
+  })
+
+  describe('login', () => {
+    it('should login', async () => {
+      await request(server)
+        .post('/')
+        .send({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        })
+
+      const response = await request(server)
+        .post('/')
+        .send({
+          query: login,
+          variables: {
+            input: {
+              email: testUser.email,
+              password: testUser.password,
+            },
+          },
+        })
+
+      expect(response.body.data.login).toEqual(
+          expect.objectContaining({
+            id: expect.any(Number),
+            firstName: testUser.firstName,
+            lastName: testUser.lastName,
+            email: testUser.email,
+            token: expect.any(String),
+          })
+        )
+    })
+
+    it('should throw if email is incorrect', async () => {
+      await request(server)
+        .post('/')
+        .send({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        })
+
+      const response = await request(server)
+        .post('/')
+        .send({
+          query: login,
+          variables: {
+            input: {
+              email: wrongEmail,
+              password: testUser.password,
+            },
+          },
+        })
+
+      expectError(response, INCORRECT_CREDENTIALS)
+    })
+
+    it('should throw if password is incorrect', async () => {
+      await request(server)
+        .post('/')
+        .send({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        })
+
+      const response = await request(server)
+        .post('/')
+        .send({
+          query: login,
+          variables: {
+            input: {
+              email: testUser.email,
+              password: wrongPassword,
+            },
+          },
+        })
+
+      expectError(response, INCORRECT_CREDENTIALS)
     })
   })
 })

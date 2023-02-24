@@ -14,6 +14,23 @@ const signUp = `#graphql
   }
 `
 
+const login = `#graphql
+  mutation LOGIN($input: UserInput!) {
+    login(input: $input) {
+      id
+      firstName
+      lastName
+      email
+      token
+      image {
+        src
+        filename
+      }
+    }
+  }
+`
+
 module.exports = {
   signUp,
+  login,
 }
