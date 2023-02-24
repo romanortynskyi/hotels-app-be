@@ -313,6 +313,16 @@ const userService = {
     const transaction = await sequelize.transaction()
 
     try {
+      if (user.ImageId) {
+        const image = await Image.findOne({
+          where: {
+            id: user.ImageId,
+          },
+        })
+
+        await uploadService.deleteFile(image.filename)
+      }
+
       await Image.destroy({
         where: {
           id: user.ImageId,

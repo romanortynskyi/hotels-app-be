@@ -1,4 +1,5 @@
 const request = require('supertest')
+const bcrypt = require('bcrypt')
 
 const uploadService = require('~/modules/upload/upload.service')
 const {
@@ -7,6 +8,8 @@ const {
   INCORRECT_CREDENTIALS,
   USER_NOT_FOUND,
 } = require('~/consts/errors')
+const { SALT_ROUNDS } = require('~/consts')
+const { User } = require('~/models')
 
 const setupApp = require('../../setup-app')
 const serverCleanup = require('../../server-cleanup')
@@ -14,6 +17,7 @@ const {
   signUp,
   login,
   updateUser,
+  deleteUser,
 } = require('./user.helper')
 const dbCleanup = require('../../db-cleanup')
 const {
@@ -467,6 +471,137 @@ describe('user mutations', () => {
         .attach('0', 'tests/test-image.jpg')
 
       expectError(updateUserResponse, INTERNAL_SERVER_ERROR)
+    })
+  })
+
+  describe('deleteUser', () => {
+    it('should delete user', async () => {
+      await request(server)
+        .post('/')
+        .send({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        })
+
+      const loginResponse = await request(server)
+        .post('/')
+        .send({
+          query: login,
+          variables: {
+            input: {
+              email: testUser.email,
+              password: testUser.password,
+            },
+          },
+        })
+
+      const deleteUserResponse = await request(server)
+        .post('/')
+        .set('Authorization', loginResponse.body.data.login.token)
+        .send({
+          query: deleteUser,
+          variables: {
+            id: loginResponse.body.data.login.id,
+          },
+        })
+
+      expect(deleteUserResponse.body.data.deleteUser).toEqual(null)
+    })
+
+    it('should throw if user is not found', async () => {
+      const admin = await User.create({
+        firstName: 'ADMIN',
+        lastName: 'ADMIN',
+        email: 'admin@example.com',
+        password: await bcrypt.hash('password', SALT_ROUNDS),
+        role: 'admin',
+      })
+
+      const loginResponse = await request(server)
+        .post('/')
+        .send({
+          query: login,
+          variables: {
+            input: {
+              email: admin.email,
+              password: 'password',
+            },
+          },
+        })
+        
+      const response = await request(server)
+        .post('/')
+        .set('Authorization', loginResponse.body.data.login.token)
+        .send({
+          query: deleteUser,
+          variables: {
+            id: 10,
+          },
+        })
+
+      expectError(response, USER_NOT_FOUND)
+    })
+
+    it('should throw if upload service throws', async () => {
+      uploadService.uploadFile = mockUploadFile
+      uploadService.deleteFile = jest.fn().mockRejectedValue()
+
+      await request(server)
+        .post('/')
+        .send({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        })
+
+      const loginResponse = await request(server)
+        .post('/')
+        .send({
+          query: login,
+          variables: {
+            input: {
+              email: testUser.email,
+              password: testUser.password,
+            },
+          },
+        })
+
+      await request(server)
+        .post('/')
+        .set('Content-Type', 'multipart/form-data')
+        .set('Apollo-Require-Preflight', true)
+        .set('Authorization', loginResponse.body.data.login.token)
+        .field('operations', JSON.stringify({
+          query: updateUser,
+          variables: {
+            id: loginResponse.body.data.login.id,
+            input: {
+              firstName: testUser.firstName,
+              lastName: testUser.lastName,
+            },
+            image: null,
+            shouldDeleteImage: true,
+          },
+        }))
+        .field('map', JSON.stringify({ 0: ['variables.image'] }))
+        .attach('0', 'tests/test-image.jpg')
+
+      const deleteUserResponse = await request(server)
+        .post('/')
+        .set('Authorization', loginResponse.body.data.login.token)
+        .send({
+          query: deleteUser,
+          variables: {
+            id: loginResponse.body.data.login.id,
+          },
+        })
+
+      expectError(deleteUserResponse, INTERNAL_SERVER_ERROR)
     })
   })
 })

@@ -45,8 +45,17 @@ const updateUser = `#graphql
   }
 `
 
+const deleteUser = `#graphql
+  mutation DELETE_USER($id: Int!) {
+    deleteUser(id: $id) {
+      id
+    }
+  }
+`
+
 module.exports = {
   signUp,
   login,
   updateUser,
+  deleteUser,
 }
