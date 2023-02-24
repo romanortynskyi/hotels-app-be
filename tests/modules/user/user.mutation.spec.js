@@ -59,6 +59,7 @@ describe('user mutations', () => {
           firstName: testUser.firstName,
           lastName: testUser.lastName,
           email: testUser.email,
+          token: expect.any(String),
         })
       )
     })
@@ -87,6 +88,7 @@ describe('user mutations', () => {
           lastName: testUser.lastName,
           email: testUser.email,
           image: mockFileResponse,
+          token: expect.any(String),
         })
       )
     })
