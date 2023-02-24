@@ -12,7 +12,6 @@ const {
   USER_DOES_NOT_HAVE_AN_IMAGE,
 } = require('~/consts/errors')
 const { SALT_ROUNDS, USER_IMAGES } = require('~/consts')
-const { JWT_SECRET } = require('~/configs')
 const uploadService = require('~/modules/upload/upload.service')
 const sequelize = require('~/sequelize')
 
@@ -66,7 +65,7 @@ const userService = {
         updatedAt: user.updatedAt,
       }
 
-      const token = jwt.sign(userToSend, JWT_SECRET)
+      const token = jwt.sign(userToSend, process.env.JWT_SECRET)
 
       await transaction.commit()
 
@@ -76,7 +75,7 @@ const userService = {
       }
     }
 
-    catch(error) {console.log(error)
+    catch(error) {
       await transaction.rollback()
       throw createError(INTERNAL_SERVER_ERROR)
     }

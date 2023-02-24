@@ -8,6 +8,7 @@ const signUp = `#graphql
       token
       image {
         src
+        filename
       }
     }
   }

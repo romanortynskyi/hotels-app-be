@@ -1,6 +1,10 @@
 const request = require('supertest')
 
 const uploadService = require('~/modules/upload/upload.service')
+const {
+  USER_ALREADY_EXISTS,
+  INTERNAL_SERVER_ERROR,
+} = require('~/consts/errors')
 
 const setupApp = require('../../setup-app')
 const serverCleanup = require('../../server-cleanup')
@@ -8,7 +12,12 @@ const {
   signUp,
 } = require('./user.helper')
 const dbCleanup = require('../../db-cleanup')
-const testImage = require('../../test-image')
+const {
+  mockFileResponse,
+  mockUploadFile,
+  mockUploadFileError,
+} = require('../../mocks')
+const { expectError } = require('../../helpers')
 
 const testUser = {
   firstName: 'vasya',
@@ -34,13 +43,15 @@ describe('user mutations', () => {
 
   describe('signUp', () => {
     it('should sign up without image', async () => {
-      const response = await request(server).post('/').send({
-        query: signUp,
-        variables: {
-          input: testUser,
-          image: null,
-        },
-      })
+      const response = await request(server)
+        .post('/')
+        .send({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        })
       
       expect(response.body.data.signUp).toEqual(
         expect.objectContaining({
@@ -52,37 +63,77 @@ describe('user mutations', () => {
       )
     })
 
-    it.only('should sign up with image', async () => {
-      uploadService.uploadFile.mockResolvedValue({
-        src: 'src',
-        filename: 'filename',
-      })
+    it('should sign up with image', async () => {
+      uploadService.uploadFile = mockUploadFile
 
       const response = await request(server)
         .post('/')
         .set('Content-Type', 'multipart/form-data')
-        .field(
-          'operations',
-          JSON.stringify({
-            query: signUp,
-            variables: {
-              input: testUser,
-              image: null,
-            },
-          })
-        )
-        .field(
-          'map',
-          JSON.stringify({
-            image: ['variables.image'],
-          })
-        )
-        .attach('image', testImage)
+        .set('Apollo-Require-Preflight', true)
+        .field('operations', JSON.stringify({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        }))
+        .field('map', JSON.stringify({ 0: ['variables.image'] }))
+        .attach('0', 'tests/test-image.jpg')
 
+      expect(response.body.data.signUp).toEqual(
+        expect.objectContaining({
+          id: expect.any(Number),
+          firstName: testUser.firstName,
+          lastName: testUser.lastName,
+          email: testUser.email,
+          image: mockFileResponse,
+        })
+      )
+    })
 
+    it('should throw if user exists', async () => {
+      await request(server)
+        .post('/')
+        .send({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        })
 
-console.log(response.body.errors[0])
-      console.log(response.body)
+      const response = await request(server)
+        .post('/')
+
+        .send({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        })
+
+      expectError(response, USER_ALREADY_EXISTS)
+    })
+
+    it('should throw if image upload threw', async () => {
+      uploadService.uploadFile = mockUploadFileError
+
+      const response = await request(server)
+        .post('/')
+        .set('Content-Type', 'multipart/form-data')
+        .set('Apollo-Require-Preflight', true)
+        .field('operations', JSON.stringify({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        }))
+        .field('map', JSON.stringify({ 0: ['variables.image'] }))
+        .attach('0', 'tests/test-image.jpg')
+
+      expectError(response, INTERNAL_SERVER_ERROR)
     })
   })
 })
