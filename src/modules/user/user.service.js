@@ -147,7 +147,7 @@ const userService = {
     let id
 
     try {
-      ({ id } = jwt.verify(token, JWT_SECRET))
+      ({ id } = jwt.verify(token, process.env.JWT_SECRET))
     }
     
     catch(err) {
@@ -175,7 +175,7 @@ const userService = {
     return userToSend
   },
 
-  updateUser: async (id, data) => {
+  updateUser: async (id, data, shouldDeleteImage, image) => {
     const user = await User.findOne({
       where: {
         id,
@@ -188,170 +188,111 @@ const userService = {
 
     const { firstName, lastName } = data
 
-    const updateResult = await User.update(
-      {
-        firstName,
-        lastName,
-      },
-      {
-        where: {
-          id,
-        },
-        returning: true,
-      }
-    )
-
-    const image = await Image.findOne({
+    const userImage = await Image.findOne({
       where: {
         id: user.ImageId,
       },
     })
 
-    const updatedUser = {
-      ...updateResult[1][0].dataValues,
-      image,
-    }
+    const transaction = await sequelize.transaction()
 
-    return updatedUser
-  },
-
-  updateUserImage: async (id, image) => {
-    const user = await User.findOne({
-      where: {
-        id,
-      },
-    })
-
-    if (!user) {
-      throw createError(USER_NOT_FOUND)
-    }
-
-    if (user.ImageId) {
-      const oldImage = await Image.findOne({
-        where: {
-          id: user.ImageId,
-        },
-      })
-
-      await uploadService.deleteFile(oldImage.filename)
-
-      const imageResponse = await uploadService.uploadFile(image.file, USER_IMAGES)
-
-      const updateResult = await Image.update(
-        {
-          src: imageResponse.src,
-          filename: imageResponse.filename,
-        },
-        {
+    try {
+      if (shouldDeleteImage) {
+        await uploadService.deleteFile(userImage.filename)
+        await Image.destroy({
           where: {
             id: user.ImageId,
           },
-          returning: true,
-        }
-      )
-
-      const updatedImage = updateResult[1][0].dataValues
-
-      const userToSend = {
-        ...user.dataValues,
-        image: updatedImage,
+          transaction,
+        })
+  
       }
-
-      return userToSend
-    }
-
-    else {
-      const imageResponse = await uploadService.uploadFile(image.file, USER_IMAGES)
-
-      const transaction = await sequelize.transaction()
-
-      try {
-        const newImage = await Image.create(imageResponse, { transaction })
-
-        await User.update(
+  
+      if (image) {
+          const imageResponse = await uploadService.uploadFile(image.file, USER_IMAGES)
+          let newImage
+  
+          if (userImage) {
+            const imageUpdateResult = await Image.update(
+              {
+                src: imageResponse.src,
+                filename: imageResponse.filename,
+              },
+              {
+                where: {
+                  id: user.ImageId,
+                },
+                returning: true,
+                transaction,
+              }
+            )
+    
+            newImage = imageUpdateResult[1][0].dataValues
+          }
+  
+          else {
+            newImage = await Image.create(imageResponse, { transaction })
+          }
+  
+          const userUpdateResult = await User.update(
+            {
+              firstName,
+              lastName,
+              ImageId: newImage.id,
+            },
+            {
+              where: {
+                id,
+              },
+              returning: true,
+              transaction,
+            }
+          )
+  
+          const updatedUser = userUpdateResult[1][0].dataValues
+  
+          await transaction.commit()
+  
+          return {
+            ...updatedUser,
+            image: newImage,
+          }
+        
+      }
+  
+      else {
+        const userUpdateResult = await User.update(
           {
-            ImageId: newImage.id,
+            firstName,
+            lastName,
           },
           {
             where: {
               id,
             },
+            returning: true,
             transaction,
-          },
+          }
         )
+  
+        const updatedUser = userUpdateResult[1][0].dataValues
 
+        const imageToSend = shouldDeleteImage ? null : userImage
+  
         await transaction.commit()
 
-        const userToSend = {
-          ...user,
-          image: newImage.dataValues,
+        return {
+          ...updatedUser,
+          image: imageToSend,
         }
-
-        return userToSend
-      }
-
-      catch(error) {
-        await transaction.rollback()
-        throw createError(INTERNAL_SERVER_ERROR)
       }
     }
-  },
 
-  deleteUserImage: async (id) => {
-    const user = await User.findOne({
-      where: {
-        id,
-      },
-    })
-
-    if (!user) {
-      throw createError(USER_NOT_FOUND)
-    }
-
-    if (user.ImageId) {
-      const transaction = await sequelize.transaction()
-
-      const oldImage = await Image.findOne({
-        where: {
-          id: user.ImageId,
-        },
-      }, { transaction })
-
-      await uploadService.deleteFile(oldImage.filename)
-
-      await Image.destroy({
-        where: {
-          id: user.ImageId,
-        },
-      }, { transaction })
-
-      const updateUserResult = await User.update(
-        {
-          ImageId: null,
-        },
-        {
-          where: {
-            id,
-          },
-          transaction,
-          returning: true,
-        },
-      )
-
-      const updatedUser = updateUserResult[1][0]
-
-      const userToSend = {
-        ...updatedUser.dataValues,
-        image: null,
-      }
-  
-      return userToSend
-    }
-
-    else {
-      throw createError(USER_DOES_NOT_HAVE_AN_IMAGE)
-    }
-  },
+    catch(error) {console.log(error)
+      await transaction.rollback()
+      throw createError(INTERNAL_SERVER_ERROR)
+    }    
+  }, 
 
   deleteUser: async (id) => {
     const user = await User.findOne({

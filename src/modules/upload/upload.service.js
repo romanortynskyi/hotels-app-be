@@ -35,7 +35,7 @@ const uploadService = {
   },
 
   deleteFile: async (filename) => {
-    const bucket = firebase.storage().bucket(BUCKET_URL)
+    const bucket = firebase.storage().bucket(process.env.BUCKET_URL)
     await bucket.file(filename).delete()
   },
 }

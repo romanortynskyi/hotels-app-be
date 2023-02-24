@@ -25,9 +25,7 @@ const userQueries = `#graphql
 const userMutations = `#graphql
   signUp(input: UserInput!, image: Upload): User!
   login(input: UserInput!): User!
-  updateUser(id: Int!, input: UserInput!): User!
-  updateUserImage(id: Int!, image: Upload!): User!
-  deleteUserImage(id: Int!): User
+  updateUser(id: Int!, input: UserInput!, shouldDeleteImage: Boolean, image: Upload): User!
   deleteUser(id: Int!): User
 `
 

@@ -21,9 +21,7 @@ const userMutationPermissions = {
   signUp: inputValidation(signUpValidator),
   login: inputValidation(loginValidator),
   updateUser: and(isAuthorized, idValidation, inputValidation(updateUserValidator)),
-  updateUserImage: and(isAuthorized, idValidation),
   deleteUser: and(hasRoles([USER, ADMIN]), idValidation),
-  deleteUserImage: and(isAuthorized, idValidation),
 }
 
 module.exports = {
