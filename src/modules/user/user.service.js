@@ -188,7 +188,7 @@ const userService = {
 
     const { firstName, lastName } = data
 
-    const userImage = await Image.findOne({
+    let userImage = await Image.findOne({
       where: {
         id: user.ImageId,
       },
@@ -197,7 +197,7 @@ const userService = {
     const transaction = await sequelize.transaction()
 
     try {
-      if (shouldDeleteImage) {
+      if (shouldDeleteImage && userImage) {
         await uploadService.deleteFile(userImage.filename)
         await Image.destroy({
           where: {
@@ -205,12 +205,18 @@ const userService = {
           },
           transaction,
         })
-  
       }
   
       if (image) {
           const imageResponse = await uploadService.uploadFile(image.file, USER_IMAGES)
           let newImage
+
+          userImage = await Image.findOne({
+            where: {
+              id: user.ImageId,
+            },
+            transaction,
+          })
   
           if (userImage) {
             const imageUpdateResult = await Image.update(
@@ -226,7 +232,7 @@ const userService = {
                 transaction,
               }
             )
-    
+            
             newImage = imageUpdateResult[1][0].dataValues
           }
   
@@ -257,7 +263,6 @@ const userService = {
             ...updatedUser,
             image: newImage,
           }
-        
       }
   
       else {
@@ -327,7 +332,7 @@ const userService = {
       return null
     }
 
-    catch(error) {
+    catch(error) {console.log(error)
       await transaction.rollback()
       throw createError(INTERNAL_SERVER_ERROR)
     }

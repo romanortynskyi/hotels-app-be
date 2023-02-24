@@ -30,7 +30,23 @@ const login = `#graphql
   }
 `
 
+const updateUser = `#graphql
+  mutation UPDATE_USER($id: Int!, $input: UserInput!, $shouldDeleteImage: Boolean, $image: Upload) {
+    updateUser(id: $id, input: $input,shouldDeleteImage: $shouldDeleteImage, image: $image) {
+      id
+      firstName
+      lastName
+      email
+      image {
+        src
+        filename
+      }
+    }
+  }
+`
+
 module.exports = {
   signUp,
   login,
+  updateUser,
 }

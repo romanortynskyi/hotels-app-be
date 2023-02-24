@@ -5,6 +5,7 @@ const {
   USER_ALREADY_EXISTS,
   INTERNAL_SERVER_ERROR,
   INCORRECT_CREDENTIALS,
+  USER_NOT_FOUND,
 } = require('~/consts/errors')
 
 const setupApp = require('../../setup-app')
@@ -12,6 +13,7 @@ const serverCleanup = require('../../server-cleanup')
 const {
   signUp,
   login,
+  updateUser,
 } = require('./user.helper')
 const dbCleanup = require('../../db-cleanup')
 const {
@@ -229,6 +231,242 @@ describe('user mutations', () => {
         })
 
       expectError(response, INCORRECT_CREDENTIALS)
+    })
+  })
+
+  describe('updateUser', () => {
+    it('should update user', async () => {
+      uploadService.uploadFile = mockUploadFile
+
+      await request(server)
+        .post('/')
+        .send({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        })
+
+      const loginResponse = await request(server)
+        .post('/')
+        .send({
+          query: login,
+          variables: {
+            input: {
+              email: testUser.email,
+              password: testUser.password,
+            },
+          },
+        })
+
+      const updateUserResponse = await request(server)
+        .post('/')
+        .set('Content-Type', 'multipart/form-data')
+        .set('Apollo-Require-Preflight', true)
+        .set('Authorization', loginResponse.body.data.login.token)
+        .field('operations', JSON.stringify({
+          query: updateUser,
+          variables: {
+            id: loginResponse.body.data.login.id,
+            input: {
+              firstName: testUser.firstName,
+              lastName: testUser.lastName,
+            },
+            image: null,
+            shouldDeleteImage: false,
+          },
+        }))
+        .field('map', JSON.stringify({ 0: ['variables.image'] }))
+        .attach('0', 'tests/test-image.jpg')
+        
+      expect(updateUserResponse.body.data.updateUser).toEqual(
+        expect.objectContaining({
+          id: loginResponse.body.data.login.id,
+          firstName: testUser.firstName,
+          lastName: testUser.lastName,
+          email: testUser.email,
+          image: mockFileResponse,
+        })
+      )
+    })
+
+    it('should update user and update image', async () => {
+      uploadService.uploadFile = mockUploadFile
+      uploadService.deleteFile = jest.fn()
+
+      await request(server)
+        .post('/')
+        .send({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        })
+
+      const loginResponse = await request(server)
+        .post('/')
+        .send({
+          query: login,
+          variables: {
+            input: {
+              email: testUser.email,
+              password: testUser.password,
+            },
+          },
+        })
+
+      const updateUserResponse = await request(server)
+        .post('/')
+        .set('Content-Type', 'multipart/form-data')
+        .set('Apollo-Require-Preflight', true)
+        .set('Authorization', loginResponse.body.data.login.token)
+        .field('operations', JSON.stringify({
+          query: updateUser,
+          variables: {
+            id: loginResponse.body.data.login.id,
+            input: {
+              firstName: testUser.firstName,
+              lastName: testUser.lastName,
+            },
+            image: null,
+            shouldDeleteImage: true,
+          },
+        }))
+        .field('map', JSON.stringify({ 0: ['variables.image'] }))
+        .attach('0', 'tests/test-image.jpg')
+        
+      expect(updateUserResponse.body.data.updateUser).toEqual(
+        expect.objectContaining({
+          id: loginResponse.body.data.login.id,
+          firstName: testUser.firstName,
+          lastName: testUser.lastName,
+          email: testUser.email,
+          image: mockFileResponse,
+        })
+      )
+    })
+
+    it('should update user and delete image', async () => {
+      uploadService.uploadFile = mockUploadFile
+      uploadService.deleteFile = jest.fn()
+
+      await request(server)
+        .post('/')
+        .send({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        })
+
+      const loginResponse = await request(server)
+        .post('/')
+        .send({
+          query: login,
+          variables: {
+            input: {
+              email: testUser.email,
+              password: testUser.password,
+            },
+          },
+        })
+
+      await request(server)
+        .post('/')
+        .set('Content-Type', 'multipart/form-data')
+        .set('Apollo-Require-Preflight', true)
+        .set('Authorization', loginResponse.body.data.login.token)
+        .field('operations', JSON.stringify({
+          query: updateUser,
+          variables: {
+            id: loginResponse.body.data.login.id,
+            input: {
+              firstName: testUser.firstName,
+              lastName: testUser.lastName,
+            },
+            image: null,
+            shouldDeleteImage: false,
+          },
+        }))
+        .field('map', JSON.stringify({ 0: ['variables.image'] }))
+        .attach('0', 'tests/test-image.jpg')
+
+      const updateUserResponse = await request(server)
+        .post('/')
+        .set('Authorization', loginResponse.body.data.login.token)
+        .send({
+          query: updateUser,
+          variables: {
+            id: loginResponse.body.data.login.id,
+            input: {
+              firstName: testUser.firstName,
+              lastName: testUser.lastName,
+            },
+            image: null,
+            shouldDeleteImage: true,
+          },
+        })
+        
+      expect(updateUserResponse.body.data.updateUser).toEqual(
+        expect.objectContaining({
+          id: loginResponse.body.data.login.id,
+          firstName: testUser.firstName,
+          lastName: testUser.lastName,
+          email: testUser.email,
+          image: null,
+        })
+      )
+    })
+
+    it('should throw if upload service throws', async () => {
+      uploadService.uploadFile = mockUploadFileError
+
+      await request(server)
+        .post('/')
+        .send({
+          query: signUp,
+          variables: {
+            input: testUser,
+            image: null,
+          },
+        })
+
+      const loginResponse = await request(server)
+        .post('/')
+        .send({
+          query: login,
+          variables: {
+            input: {
+              email: testUser.email,
+              password: testUser.password,
+            },
+          },
+        })
+
+      const updateUserResponse = await request(server)
+        .post('/')
+        .set('Content-Type', 'multipart/form-data')
+        .set('Apollo-Require-Preflight', true)
+        .set('Authorization', loginResponse.body.data.login.token)
+        .field('operations', JSON.stringify({
+          query: updateUser,
+          variables: {
+            id: loginResponse.body.data.login.id,
+            input: {
+              firstName: testUser.firstName,
+              lastName: testUser.lastName,
+            },
+            image: null,
+            shouldDeleteImage: false,
+          },
+        }))
+        .field('map', JSON.stringify({ 0: ['variables.image'] }))
+        .attach('0', 'tests/test-image.jpg')
+
+      expectError(updateUserResponse, INTERNAL_SERVER_ERROR)
     })
   })
 })
