@@ -72,24 +72,3 @@ jobs:
           DATABASE_DIALECT: ${{ secrets.DATABASE_DIALECT }}
           PORT: ${{ secrets.PORT }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
-  deploy:
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-    needs: [integration-test, migrate-db]
-    runs-on: ubuntu-latest
-    environment: development
-    strategy:
-      matrix:
-        node-version: [18.x]
-    steps:
-      - uses: actions/checkout@v3
-      - name: Auth
-        uses: 'google-github-actions/auth@v1'
-        with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
-          project_id: ${{ secrets.PROJECT_ID }}
-
-      - name: Deploy
-        uses: 'google-github-actions/deploy-appengine@v1'
