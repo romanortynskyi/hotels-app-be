@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    services:
+      postgres:
+        image: postgres:12-alpine
+        env:
+          POSTGRES_USER: localUser
+          POSTGRES_PASSWORD: localPassword
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install Dependencies
+      run: npm install
+    - name: Integration testing
+      run: |
+        npx sequelize-cli db:migrate
+        npm test
+      env:
+        DATABASE_NAME: test
+        DATABASE_USERNAME: localUser
+        DATABASE_PASSWORD: localPassword
+        DATABASE_HOST: localhost
+        DATABASE_DIALECT: postgres
+        PORT: 4000
+        JWT_SECRET: secret
+
+
