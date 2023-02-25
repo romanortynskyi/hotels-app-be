@@ -83,6 +83,7 @@ jobs:
       matrix:
         node-version: [18.x]
     steps:
+      - uses: actions/checkout@v2
       - name: Auth
         uses: 'google-github-actions/auth@v1'
         with:
