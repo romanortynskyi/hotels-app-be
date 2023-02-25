@@ -9,6 +9,7 @@ on:
 jobs:
   integration-test:
     runs-on: ubuntu-latest
+    environment: test
     strategy:
       matrix:
         node-version: [14.x]
@@ -44,7 +45,7 @@ jobs:
         DATABASE_PASSWORD: localPassword
         DATABASE_HOST: localhost
         DATABASE_DIALECT: postgres
-        PORT: 4000
-        JWT_SECRET: secret
+        PORT: ${{ secrets.PORT }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
 

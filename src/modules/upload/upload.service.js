@@ -1,13 +1,13 @@
 const path = require('path')
 const { v4: uuid } = require('uuid')
 
-const storage = require('~/storage')
+const getStorage = require('~/get-storage')
 
 const uploadService = {
   uploadFile: async (file, directory) => {
     const { createReadStream, filename: originalName } = file
 
-    const bucket = storage.bucket(process.env.BUCKET_URL)
+    const bucket = getStorage().bucket(process.env.BUCKET_URL)
 
     const extension = path.extname(originalName)
     const filename = `${directory}/${uuid()}${extension}`
@@ -36,7 +36,7 @@ const uploadService = {
   },
 
   deleteFile: async (filename) => {
-    const bucket = firebase.storage().bucket(process.env.BUCKET_URL)
+    const bucket = getStorage().bucket(process.env.BUCKET_URL)
     await bucket.file(filename).delete()
   },
 }
