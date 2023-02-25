@@ -86,4 +86,5 @@ jobs:
       - uses: actions/checkout@v2
       - uses: 'google-github-actions/deploy-appengine@v1'
         with:
+          deliverables: app.yaml
           credentials: ${{ secrets.GCP_CREDENTIALS }}
