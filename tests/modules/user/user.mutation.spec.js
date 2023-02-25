@@ -37,7 +37,7 @@ const testUser = {
 const wrongEmail = 'email@gmail.com'
 const wrongPassword = 'password'
 
-describe.skip('user mutations', () => {
+describe('user mutations', () => {
   let server
 
   beforeAll(async () => {

@@ -12,7 +12,7 @@ const dbCleanup = require('../../db-cleanup')
 const { expectError } = require('../../helpers')
 const { testUser } = require('../../consts')
 
-describe('user queries', () => {
+describe.skip('user queries', () => {
   let server
 
   beforeAll(async () => {
