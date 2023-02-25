@@ -84,11 +84,8 @@ jobs:
         node-version: [18.x]
     steps:
       - uses: actions/checkout@v2
-      - name: Auth
-        uses: 'google-github-actions/auth@v1'
+      - uses: 'google-github-actions/deploy-appengine@v1'
         with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT }}
-
-      - name: Deploy
-        uses: 'google-github-actions/deploy-appengine@v1'
+          deliverables: app.yaml
+          project_id: ${{ secrets.PROJECT_ID }}
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
