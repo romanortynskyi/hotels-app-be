@@ -88,4 +88,3 @@ jobs:
         with:
           deliverables: app.yaml
           project_id: ${{ secrets.PROJECT_ID }}
-          credentials: ${{ secrets.GCP_CREDENTIALS }}
