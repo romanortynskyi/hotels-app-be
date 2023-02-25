@@ -19,7 +19,6 @@ const typeDefs = require('./type-defs')
 const resolvers = require('./resolvers')
 const permissions = require('./permissions')
 const userService = require('./modules/user/user.service')
-const initializeFirebase = require('./initialize-firebase')
 
 const sequelize = require('./sequelize')
 
@@ -32,8 +31,6 @@ const setupServer = async () => {
   } catch (error) {
     console.error('Unable to connect to the database:', error)
   }
-
-  initializeFirebase()
 
   const app = express()
   const httpServer = http.createServer(app)

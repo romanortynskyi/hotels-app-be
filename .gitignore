@@ -1,5 +1,4 @@
 .env
 .env.test
 node_modules
-service-account.json
 tests/coverage

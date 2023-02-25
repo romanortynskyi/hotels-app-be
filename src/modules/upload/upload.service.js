@@ -1,12 +1,13 @@
-const firebase = require('firebase-admin')
 const path = require('path')
 const { v4: uuid } = require('uuid')
+
+const storage = require('~/storage')
 
 const uploadService = {
   uploadFile: async (file, directory) => {
     const { createReadStream, filename: originalName } = file
 
-    const bucket = firebase.storage().bucket(process.env.BUCKET_URL)
+    const bucket = storage.bucket(process.env.BUCKET_URL)
 
     const extension = path.extname(originalName)
     const filename = `${directory}/${uuid()}${extension}`
