@@ -47,22 +47,13 @@ jobs:
         DATABASE_DIALECT: postgres
         PORT: ${{ secrets.PORT }}
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
-  migrate-db:
-    runs-on: ubuntu-latest
-    environment: development
-    strategy:
-      matrix:
-        node-version: [18.x]
-    steps:
-      - name: Migrate DB
-        run: npx sequelize-cli db:migrate
-        env:
-          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-          DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
-          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-          DATABASE_DIALECT: ${{ secrets.DATABASE_DIALECT }}
-          PORT: ${{ secrets.PORT }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-
-
+    - name: Migrate DB
+      run: npx sequelize-cli db:migrate
+      env:
+        DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+        DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+        DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+        DATABASE_DIALECT: ${{ secrets.DATABASE_DIALECT }}
+        PORT: ${{ secrets.PORT }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
