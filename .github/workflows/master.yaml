@@ -73,6 +73,9 @@ jobs:
           PORT: ${{ secrets.PORT }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
   deploy:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     needs: [integration-test, migrate-db]
     runs-on: ubuntu-latest
     environment: development
