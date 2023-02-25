@@ -1,16 +1,12 @@
 const request = require('supertest')
 
-const {
-  BAD_TOKEN,
-  USER_NOT_FOUND,
-} = require('~/consts/errors')
+const { BAD_TOKEN } = require('~/consts/errors')
 
 const setupApp = require('../../setup-app')
 const serverCleanup = require('../../server-cleanup')
 const {
   signUp,
   getMe,
-  deleteUser,
 } = require('./user.helper')
 const dbCleanup = require('../../db-cleanup')
 const { expectError } = require('../../helpers')
