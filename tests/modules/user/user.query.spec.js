@@ -23,8 +23,8 @@ describe('user queries', () => {
     await dbCleanup()
   })
 
-  afterAll((done) => {
-    server.close(done)
+  afterAll(async () => {
+    await serverCleanup(server)
   })
 
   describe('getMe', () => {

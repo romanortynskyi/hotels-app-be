@@ -48,8 +48,8 @@ describe('user mutations', () => {
     await dbCleanup()
   })
 
-  afterAll((done) => {
-    server.close(done)
+  afterAll(async () => {
+    await serverCleanup(server)
   })
 
   describe('signUp', () => {
