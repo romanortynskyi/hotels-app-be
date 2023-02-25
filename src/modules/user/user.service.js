@@ -342,7 +342,7 @@ const userService = {
       return null
     }
 
-    catch(error) {console.log(error)
+    catch(error) {
       await transaction.rollback()
       throw createError(INTERNAL_SERVER_ERROR)
     }

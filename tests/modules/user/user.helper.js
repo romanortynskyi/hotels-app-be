@@ -53,9 +53,25 @@ const deleteUser = `#graphql
   }
 `
 
+const getMe = `#graphql
+  query GET_ME {
+    getMe {
+      id
+      firstName
+      lastName
+      email
+      image {
+        src
+        filename
+      }
+    }
+  }
+`
+
 module.exports = {
   signUp,
   login,
   updateUser,
   deleteUser,
+  getMe,
 }

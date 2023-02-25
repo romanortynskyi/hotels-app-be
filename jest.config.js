@@ -8,7 +8,7 @@ module.exports = {
   collectCoverage: true,
   collectCoverageFrom: [
     '!<rootDir>/node_modules/*',
-    '!<rootDir>/test/**/*',
+    '!<rootDir>/tests/**/*',
     '!<rootDir>/consts/*',
     '!<rootDir>/config/*',
     '!<rootDir>/models/*',
