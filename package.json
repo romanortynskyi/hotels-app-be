@@ -6,7 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "nodemon .",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.config.js --detectOpenHandles --maxWorkers=1"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.config.js --maxWorkers=1"
   },
   "keywords": [],
   "author": "",
