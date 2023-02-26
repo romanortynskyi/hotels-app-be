@@ -1,19 +1,19 @@
 const { Storage } = require('@google-cloud/storage')
 
-const {
-  TYPE,
-  PROJECT_ID,
-  PRIVATE_KEY_ID,
-  PRIVATE_KEY,
-  CLIENT_EMAIL,
-  CLIENT_ID,
-  AUTH_URI,
-  TOKEN_URI,
-  AUTH_PROVIDER_X509_CERT_URL,
-  CLIENT_X509_CERT_URL,
-} = process.env
-
 const getStorage = () => {
+  const {
+    TYPE,
+    PROJECT_ID,
+    PRIVATE_KEY_ID,
+    PRIVATE_KEY,
+    CLIENT_EMAIL,
+    CLIENT_ID,
+    AUTH_URI,
+    TOKEN_URI,
+    AUTH_PROVIDER_X509_CERT_URL,
+    CLIENT_X509_CERT_URL,
+  } = process.env
+  
   const storage = new Storage({
     credentials: {
       type: TYPE,
