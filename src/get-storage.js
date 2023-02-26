@@ -13,7 +13,7 @@ const getStorage = () => {
     AUTH_PROVIDER_X509_CERT_URL,
     CLIENT_X509_CERT_URL,
   } = process.env
-  
+  console.log(process.env)
   const storage = new Storage({
     credentials: {
       type: TYPE,
