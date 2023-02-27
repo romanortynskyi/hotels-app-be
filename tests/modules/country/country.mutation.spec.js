@@ -10,7 +10,6 @@ const {
 } = require('~/consts/errors')
 
 const setupApp = require('../../setup-app')
-const dbCleanup = require('../../db-cleanup')
 const serverCleanup = require('../../server-cleanup')
 const { login, signUp } = require('../user/user.helper')
 const {
@@ -28,15 +27,11 @@ const {
 describe('country mutations', () => {
   let server
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     ({ server } = await setupApp())
   })
 
-  beforeEach(async () => {
-    await dbCleanup()
-  })
-
-  afterAll(async () => {
+  afterEach(async () => {
     await serverCleanup(server)
   })
 

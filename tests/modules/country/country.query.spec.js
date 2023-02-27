@@ -12,22 +12,17 @@ const {
   getAllCountries,
 } = require('./country.helper')
 const { signUp, login } = require('../user/user.helper')
-const dbCleanup = require('../../db-cleanup')
 const { expectError } = require('../../helpers')
 const { testUser, testCountry } = require('../../consts')
 
-describe('user queries', () => {
+describe('country queries', () => {
   let server
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     ({ server } = await setupApp())
   })
 
-  beforeEach(async () => {
-    await dbCleanup()
-  })
-
-  afterAll(async () => {
+  afterEach(async () => {
     await serverCleanup(server)
   })
 
