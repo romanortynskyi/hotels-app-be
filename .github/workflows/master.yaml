@@ -37,8 +37,6 @@ jobs:
       run: npm install
     - name: Migrate test DB
       run: npx sequelize-cli db:migrate --env test
-    - name: Integration testing
-      run: npm test
       env:
         DATABASE_NAME: test
         DATABASE_USERNAME: localUser
@@ -47,6 +45,8 @@ jobs:
         DATABASE_DIALECT: postgres
         PORT: ${{ secrets.PORT }}
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
+    - name: Integration testing
+      run: npm test
   migrate-db:
     needs: integration-test
     runs-on: ubuntu-latest
