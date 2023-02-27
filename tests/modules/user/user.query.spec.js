@@ -15,12 +15,7 @@ describe('user queries', () => {
   let server
 
   beforeEach(async () => {
-    try {
-      ({ server } = await setupApp())
-    }
-    catch(error) {
-      console.error('error', error)
-    }
+    ({ server } = await setupApp())
   })
 
   afterEach(async () => {

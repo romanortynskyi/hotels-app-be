@@ -43,10 +43,16 @@ jobs:
         DATABASE_PASSWORD: localPassword
         DATABASE_HOST: localhost
         DATABASE_DIALECT: postgres
-        PORT: ${{ secrets.PORT }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
     - name: Integration testing
       run: npm test
+      env:
+        DATABASE_NAME: test
+        DATABASE_USERNAME: localUser
+        DATABASE_PASSWORD: localPassword
+        DATABASE_HOST: localhost
+        DATABASE_DIALECT: postgres
+        PORT: ${{ secrets.PORT }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
   migrate-db:
     needs: integration-test
     runs-on: ubuntu-latest
