@@ -35,10 +35,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Install Dependencies
       run: npm install
+    - name: Migrate test DB
+      run: npx sequelize-cli db:migrate --env test
     - name: Integration testing
-      run: |
-        npx sequelize-cli db:migrate --env test
-        npm run run-tests
+      run: npm test
       env:
         DATABASE_NAME: test
         DATABASE_USERNAME: localUser
