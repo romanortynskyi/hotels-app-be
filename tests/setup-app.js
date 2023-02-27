@@ -2,10 +2,16 @@ const setupServer = require('~/setup-server')
 const db = require('~/models')
 
 const setupApp = async () => {
-  const setup = await setupServer()
-  await db.sequelize.sync({ force: true })
+  const port = 0
+  try {
+    const setup = await setupServer(port)
+    await db.sequelize.sync({ force:true })
 
-  return setup
+    return setup
+  }
+  catch(error) {
+    console.error(error)
+  }
 }
 
 module.exports = setupApp

@@ -1,3 +1,3 @@
 const setupServer = require('./setup-server')
 
-setupServer()
+setupServer(process.env.PORT)
