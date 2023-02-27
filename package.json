@@ -6,7 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "start": "nodemon .",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --forceExit --maxWorkers=1"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --maxWorkers=1",
+    "run-tests": "node tests/run-tests.js"
   },
   "keywords": [],
   "author": "",

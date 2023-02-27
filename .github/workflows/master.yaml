@@ -38,7 +38,7 @@ jobs:
     - name: Integration testing
       run: |
         npx sequelize-cli db:migrate --env test
-        npm test
+        npm run run-tests
       env:
         DATABASE_NAME: test
         DATABASE_USERNAME: localUser
