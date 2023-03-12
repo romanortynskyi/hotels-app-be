@@ -8,22 +8,17 @@ const {
   signUp,
   getMe,
 } = require('./user.helper')
-const dbCleanup = require('../../db-cleanup')
 const { expectError } = require('../../helpers')
 const { testUser } = require('../../consts')
 
 describe('user queries', () => {
   let server
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     ({ server } = await setupApp())
   })
 
-  beforeEach(async () => {
-    await dbCleanup()
-  })
-
-  afterAll(async () => {
+  afterEach(async () => {
     await serverCleanup(server)
   })
 
