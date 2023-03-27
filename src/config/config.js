@@ -1,5 +1,10 @@
 const path = require('path')
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
+
+const testEnvPath = path.resolve(__dirname, '../../.env.test')
+const localEnvPath = path.resolve(__dirname, '../../.env.local')
+require('dotenv').config({
+  path: process.env.NODE_ENV === 'test' ? testEnvPath : localEnvPath 
+})
 
 module.exports = {
   development: {
