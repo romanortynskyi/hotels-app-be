@@ -1,11 +1,13 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const { Op } = require('sequelize')
 
 const { User, Image } = require('~/models')
 const createError = require('~/utils/create-error')
 const {
   USER_ALREADY_EXISTS,
   BAD_TOKEN,
+  BAD_RECOVERY_CODE,
   INCORRECT_CREDENTIALS,
   USER_NOT_FOUND,
   INTERNAL_SERVER_ERROR,
@@ -14,6 +16,9 @@ const {
 const { SALT_ROUNDS, USER_IMAGES } = require('~/consts')
 const uploadService = require('~/modules/upload/upload.service')
 const sequelize = require('~/sequelize')
+const getRandomIntFromInterval = require('~/utils/get-random-int-from-interval')
+const emailService = require('~/modules/email/email.service')
+const emailSubject = require('~/consts/email-subject')
 
 const userService = {
 	signUp: async (data, image) => {
@@ -137,6 +142,93 @@ const userService = {
       ...userToSend,
       token,
     }
+  },
+
+  sendResetPasswordEmail: async (input) => {
+    const { email, language } = input
+
+    const user = await User.findOne({
+      where: {
+        email,
+      },
+    })
+
+    if (!user) {
+      throw createError(USER_NOT_FOUND)
+    }
+
+    const { id, firstName } = user
+
+    const recoveryCode = getRandomIntFromInterval(100000, 999999)
+    
+    await User.update({ recoveryCode }, {
+      where: {
+        id,
+      },
+    })
+
+    setTimeout(() => {
+      User.update({ recoveryCode: null }, {
+        where: {
+          id,
+        },
+      })
+    }, 24 * 60 * 60 * 1000) // 24 hours
+
+    await emailService.sendEmail(email, emailSubject.RESET_PASSWORD, language, { recoveryCode, firstName })
+
+    return true
+  },
+
+  verifyRecoveryCode: async (data) => {
+    const { email, recoveryCode } = data
+
+    const user = await User.findOne({
+      where: {
+        [Op.and]: [
+          { email },
+          { recoveryCode },
+        ],
+      },
+      attributes: ['recoveryCode'],
+    })
+
+    if (!user) {
+      throw createError(BAD_RECOVERY_CODE)
+    }
+
+    return Boolean(user)
+  },
+
+  resetPassword: async ({ password, recoveryCode, email }) => {
+    const user = await User.findOne({
+      where: {
+        [Op.and]: [
+          { recoveryCode },
+          { email },
+        ],
+      },
+    })
+
+    if (!user) {
+      throw createError(BAD_RECOVERY_CODE)
+    }
+
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
+
+    await User.update({
+      password: hashedPassword,
+      recoveryCode: null,
+    }, {
+      where: {
+        [Op.and]: [
+          { recoveryCode },
+          { email },
+        ],
+      },
+    })
+
+    return true
   },
 
   getUserByToken: async (token) => {

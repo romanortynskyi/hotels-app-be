@@ -1,4 +1,4 @@
-const { and } = require('graphql-shield')
+const { and, allow } = require('graphql-shield')
 
 const { USER, ADMIN } = require('~/consts')
 const {
@@ -10,16 +10,21 @@ const {
 const {
   signUpValidator,
   loginValidator,
+  sendResetPasswordEmailValidator,
+  resetPasswordValidator,
   updateUserValidator,
 } = require('~/validators/user.validator')
 
 const userQueryPermissions = {
   getMe: isAuthorized,
+  verifyRecoveryCode: allow,
 }
 
 const userMutationPermissions = {
   signUp: inputValidation(signUpValidator),
   login: inputValidation(loginValidator),
+  sendResetPasswordEmail: inputValidation(sendResetPasswordEmailValidator),
+  resetPassword: inputValidation(resetPasswordValidator),
   updateUser: and(isAuthorized, idValidation, inputValidation(updateUserValidator)),
   deleteUser: and(hasRoles([USER, ADMIN]), idValidation),
 }

@@ -23,6 +23,11 @@ const BAD_TOKEN = {
   message: 'Invalid token.',
 }
 
+const BAD_RECOVERY_CODE = {
+  code: 'BAD_RECOVERY_CODE',
+  message: 'Invalid recovery code.',
+}
+
 const INTERNAL_SERVER_ERROR = {
   code: 'INTERNAL_SERVER_ERROR',
   message: 'Internal server error.',
@@ -69,6 +74,7 @@ module.exports = {
   INVALID_TOKEN,
   USER_NOT_FOUND,
   BAD_TOKEN,
+  BAD_RECOVERY_CODE,
   INTERNAL_SERVER_ERROR,
   USER_DOES_NOT_HAVE_AN_IMAGE,
   COUNTRY_NOT_FOUND,
