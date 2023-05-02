@@ -3,6 +3,7 @@ const userService = require('./user.service')
 const userQuery = {
   getMe: (_, __, context) => context.user,
   verifyRecoveryCode: (_, args) => userService.verifyRecoveryCode(args.input),
+  userExistsByEmail: (_, args) => userService.userExistsByEmail(args.email),
 }
 
 const userMutation = {

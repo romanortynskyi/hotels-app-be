@@ -99,6 +99,7 @@ const userService = {
         'lastName',
         'email',
         'password',
+        'role',
         'createdAt',
         'updatedAt',
       ], 
@@ -121,6 +122,7 @@ const userService = {
       id,
       firstName,
       lastName,
+      role,
       createdAt,
       updatedAt,
       Image: userImage,
@@ -131,6 +133,7 @@ const userService = {
       firstName,
       lastName,
       email,
+      role,
       createdAt,
       updatedAt,
       image: userImage,
@@ -265,6 +268,16 @@ const userService = {
     }
 
     return userToSend
+  },
+
+  userExistsByEmail: async (email) => {
+    const user = await User.findOne({
+      where: {
+        email,
+      },
+    })
+
+    return Boolean(user)
   },
 
   updateUser: async (id, data, shouldDeleteImage, image) => {

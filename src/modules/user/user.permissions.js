@@ -18,6 +18,7 @@ const {
 const userQueryPermissions = {
   getMe: isAuthorized,
   verifyRecoveryCode: allow,
+  userExistsByEmail: allow,
 }
 
 const userMutationPermissions = {

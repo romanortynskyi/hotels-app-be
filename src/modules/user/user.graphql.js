@@ -4,6 +4,7 @@ const userType = `#graphql
     firstName: String!
     lastName: String!
     email: String!
+    role: String!
     token: String
     image: Image
   }
@@ -43,6 +44,7 @@ const resetPasswordInput = `#graphql
 const userQueries = `#graphql
   getMe: User
   verifyRecoveryCode(input: VerifyRecoveryCodeInput!): Boolean
+  userExistsByEmail(email: String!): Boolean
 `
 
 const userMutations = `#graphql
