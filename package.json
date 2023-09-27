@@ -6,7 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "nodemon .",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --forceExit --maxWorkers=1"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --maxWorkers=2"
   },
   "keywords": [],
   "author": "",
@@ -19,8 +19,10 @@
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
+    "email-templates": "^11.0.3",
     "express": "^4.18.2",
     "firebase-admin": "^11.5.0",
+    "get-port": "^6.1.2",
     "graphql": "^16.6.0",
     "graphql-middleware": "^6.1.33",
     "graphql-shield": "^7.6.5",
@@ -28,6 +30,7 @@
     "joi": "^17.8.3",
     "jsonwebtoken": "^9.0.0",
     "module-alias": "^2.2.2",
+    "nodemailer": "^6.9.1",
     "nodemon": "^2.0.20",
     "pg": "^8.9.0",
     "pg-hstore": "^2.3.4",

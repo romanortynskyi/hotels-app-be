@@ -75,6 +75,8 @@ const countryService = {
         id,
       },
     })
+
+    return country
   },
 }
 

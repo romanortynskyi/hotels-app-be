@@ -1,5 +1,9 @@
+const path = require('path')
+
+const testEnvPath = path.resolve(__dirname, '../.env.test')
+const localEnvPath = path.resolve(__dirname, '../.env.local')
 require('dotenv').config({
-  path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
+  path: process.env.NODE_ENV === 'test' ? testEnvPath : localEnvPath 
 })
 
 require('module-alias/register')
@@ -22,7 +26,7 @@ const userService = require('./modules/user/user.service')
 
 const sequelize = require('./sequelize')
 
-const setupServer = async () => {
+const setupServer = async (port) => {
   const { default: graphqlUploadExpress } = await import('graphql-upload/graphqlUploadExpress.mjs')
 
   try {
@@ -61,15 +65,15 @@ const setupServer = async () => {
       }),
     }),
   )
+  
+  await new Promise((resolve) => httpServer.listen({ port }, resolve))
+  
+  const actualPort = httpServer.address().port
 
-  const { PORT } = process.env
-  
-  await new Promise((resolve) => httpServer.listen({ port: PORT }, resolve))
-  
-  console.log(`🚀 Server ready at http://localhost:${PORT}`)
+  console.log(`🚀 Server ready at http://localhost:${actualPort}`)
 
   return {
-    url: `http://localhost:${PORT}`,
+    url: `http://localhost:${actualPort}`,
     server: httpServer,
   }
 }

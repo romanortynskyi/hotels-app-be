@@ -99,7 +99,7 @@ const hotelService = {
           LEFT JOIN "Cities" "city" ON "city"."id"="hotel"."CityId"
           LEFT JOIN "Images" "image" ON "image"."id"="hotel"."ImageId"
           WHERE "city"."id" = :cityId
-          AND "room"."id" IN (
+          AND "room"."id" NOT IN (
             SELECT
               "room"."id"
             FROM "Rooms" "room"
@@ -165,6 +165,7 @@ const hotelService = {
           "hotel"."id" AS id,
           "hotel"."name" AS name,
           "hotel"."description" AS description,
+          "city"."id" AS "city.id",
           "city"."name" AS "city.name",
           "city"."CountryId" AS "city.countryId",
           MIN("room"."kidPrice") AS "minKidPrice",
@@ -284,15 +285,15 @@ const hotelService = {
             id,
           },
           transaction,
-        }
+        },
       )
+
+      let imageResponse
   
       if (image) {
-        if (hotel.ImageId) {
-          await uploadService.deleteFile(hotel.Image.filename)
-        }
+        await uploadService.deleteFile(hotel.Image.filename)
 
-        const imageResponse = await uploadService.uploadFile(image.file, HOTEL_IMAGES)
+        imageResponse = await uploadService.uploadFile(image.file, HOTEL_IMAGES)
 
         await Image.update(
           imageResponse,
@@ -305,17 +306,35 @@ const hotelService = {
         )
 
         await transaction.commit()
+      }
 
-        const hotelToSend = {
-          ...hotel.dataValues,
-          city: {
-            ...hotel.City.dataValues,
-            countryId: hotel.City.CountryId,
+      else {
+        await transaction.commit()
+      }
+
+      const updatedHotel = await Hotel.findOne({
+        where: {
+          id,
+        },
+        include: [
+          {
+            model: City,
+            required: true,
           },
-          image: imageResponse,
-        }
+          {
+            model: Image,
+            required: true,
+          },
+        ],
+      })
 
-        return hotelToSend
+      return {
+        ...updatedHotel.dataValues,
+        city: {
+          ...updatedHotel.City.dataValues,
+          countryId: updatedHotel.City.CountryId,
+        },
+        image: imageResponse ? imageResponse : updatedHotel.Image.dataValues,
       }
     }
 
@@ -357,6 +376,8 @@ const hotelService = {
       })
 
       await transaction.commit()
+
+      return hotel.dataValues
     }
 
     catch(error) {

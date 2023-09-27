@@ -36,18 +36,18 @@ const resolvers = {
   },
   Hotel: {
     description: (parent, args) => {
-      const { sentencesCount } = args;
+      const { sentencesCount } = args
 
       const sentences = parent.description.split('.');
 
       const joinedStr = sentences
         .slice(0, sentencesCount)
         .join('. ')
-        .trim();
+        .trim()
 
-      const result = `${joinedStr}.`;
+      const result = `${joinedStr}.`
 
-      return result;
+      return result
     },
   },
   Room: {

@@ -19,7 +19,6 @@ const {
   updateUser,
   deleteUser,
 } = require('./user.helper')
-const dbCleanup = require('../../db-cleanup')
 const {
   mockFileResponse,
   mockUploadFile,
@@ -40,15 +39,11 @@ const wrongPassword = 'password'
 describe('user mutations', () => {
   let server
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     ({ server } = await setupApp())
   })
 
-  beforeEach(async () => {
-    await dbCleanup()
-  })
-
-  afterAll(async () => {
+  afterEach(async () => {
     await serverCleanup(server)
   })
 

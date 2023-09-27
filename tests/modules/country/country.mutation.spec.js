@@ -10,7 +10,6 @@ const {
 } = require('~/consts/errors')
 
 const setupApp = require('../../setup-app')
-const dbCleanup = require('../../db-cleanup')
 const serverCleanup = require('../../server-cleanup')
 const { login, signUp } = require('../user/user.helper')
 const {
@@ -19,38 +18,24 @@ const {
   deleteCountry,
 } = require('./country.helper')
 const { expectError } = require('../../helpers')
-
-const testUser = {
-  email: 'test@example.com',
-  password: 'password',
-  firstName: 'John',
-  lastName: 'Doe',
-}
-
-const testCountry = {
-  name: 'Italy',
-}
-
-const testUpdateCountry = {
-  name: 'France',
-}
+const {
+  testCountry,
+  testUser,
+  testUpdateCountry,
+} = require('../../consts') 
 
 describe('country mutations', () => {
   let server
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     ({ server } = await setupApp())
   })
 
-  beforeEach(async () => {
-    await dbCleanup()
-  })
-
-  afterAll(async () => {
+  afterEach(async () => {
     await serverCleanup(server)
   })
 
-  describe('add country', () => {
+  describe('addCountry', () => {
     it('should add country', async () => {
       const admin = await User.create({
         firstName: 'ADMIN',
@@ -127,7 +112,7 @@ describe('country mutations', () => {
     })
   })
 
-  describe('update country', () => {
+  describe('updateCountry', () => {
     it('should update country', async () => {
       const admin = await User.create({
         firstName: 'ADMIN',
@@ -253,7 +238,7 @@ describe('country mutations', () => {
     })
   })
 
-  describe('delete country', () => {
+  describe('deleteCountry', () => {
     it('should delete country', async () => {
       const admin = await User.create({
         firstName: 'ADMIN',

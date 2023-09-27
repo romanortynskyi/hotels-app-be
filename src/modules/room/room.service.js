@@ -4,6 +4,7 @@ const { Hotel, Room } = require('~/models')
 const {
   ROOM_NOT_FOUND,
   HOTEL_NOT_FOUND,
+  ROOM_ALREADY_EXISTS,
 } = require('~/consts/errors')
 const createError = require('~/utils/create-error')
 const sequelize = require('~/sequelize')
@@ -28,6 +29,17 @@ const roomService = {
       throw createError(HOTEL_NOT_FOUND)
     }
 
+    const roomByNumberAndHotel = await Room.findOne({
+      where: {
+        HotelId: hotelId,
+        number,
+      },
+    })
+
+    if (roomByNumberAndHotel) {
+      throw createError(ROOM_ALREADY_EXISTS)
+    }
+
     const room = await Room.create({
       number,
       bedsCount,
@@ -45,6 +57,16 @@ const roomService = {
   },
 
   getRoomsByHotel: async (id, filter, skip, limit) => {
+    const hotel = await Hotel.findOne({
+      where: {
+        id,
+      },
+    })
+
+    if (!hotel) {
+      throw createError(HOTEL_NOT_FOUND)
+    }
+
     if (filter) {
       const {
         kidsCount,
@@ -100,24 +122,34 @@ const roomService = {
       }
     }
 
-    else {
-      const hotel = await Hotel.findOne({
-        where: {
-          id,
+    else {  
+      const rooms = await sequelize.query(
+        `
+          SELECT
+          *,
+          COUNT(*) OVER() AS "totalCount"
+          FROM "Rooms" "room"
+          WHERE "room"."HotelId" = :hotelId
+          OFFSET :offset
+          LIMIT :limit
+        `,
+        {
+          replacements: {
+            hotelId: id,
+            offset: skip,
+            limit,
+          },
+          type: QueryTypes.SELECT,
         },
-        include: Room,
-      })
-  
-      if (!hotel) {
-        throw createError(HOTEL_NOT_FOUND)
+      )
+
+      const totalCount = parseInt(rooms[0]?.totalCount || 0)
+
+      return {
+        items: rooms,
+        totalCount,
+        pagesCount: Math.ceil(totalCount / limit),
       }
-  
-      const roomsToSend = hotel.Rooms.map((room) => ({
-        ...room.dataValues,
-        hotelId: room.HotelId,
-      }))
-  
-      return roomsToSend
     }
     
   },
@@ -141,8 +173,29 @@ const roomService = {
     return roomToSend
   },
 
-  updateRoom: async (id, data, image) => {
-    
+  updateRoom: async (id, data) => {
+    const room = await Room.findOne({
+      where: {
+        id,
+      },
+    })
+
+    if (!room) {
+      throw createError(ROOM_NOT_FOUND)
+    }
+
+    const [_, updatedRoom] = await Room.update(
+      data,
+      {
+        where: {
+          id,
+        },
+        returning: true,
+        plain: true,
+      },
+    )
+
+    return updatedRoom
   },
 
   deleteRoom: async (id) => {

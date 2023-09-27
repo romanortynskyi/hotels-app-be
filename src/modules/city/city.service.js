@@ -92,6 +92,8 @@ const cityService = {
         id,
       },
     })
+
+    return city
   },
 }
 

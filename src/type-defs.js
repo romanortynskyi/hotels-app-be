@@ -1,6 +1,9 @@
 const {
   userType,
   userInput,
+  sendResetPasswordEmailInput,
+  resetPasswordInput,
+  verifyRecoveryCodeInput,
   userQueries,
   userMutations,
 } = require('./modules/user/user.graphql')
@@ -51,6 +54,9 @@ module.exports = `#graphql
   ${reservationType}
 
   ${userInput}
+  ${sendResetPasswordEmailInput}
+  ${verifyRecoveryCodeInput}
+  ${resetPasswordInput}
   ${countryInput}
   ${cityInput}
   ${hotelInput}

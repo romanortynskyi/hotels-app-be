@@ -23,6 +23,11 @@ const BAD_TOKEN = {
   message: 'Invalid token.',
 }
 
+const BAD_RECOVERY_CODE = {
+  code: 'BAD_RECOVERY_CODE',
+  message: 'Invalid recovery code.',
+}
+
 const INTERNAL_SERVER_ERROR = {
   code: 'INTERNAL_SERVER_ERROR',
   message: 'Internal server error.',
@@ -53,9 +58,14 @@ const ROOM_NOT_FOUND = {
   message: 'Room with the specified id does not exist.',
 }
 
+const ROOM_ALREADY_EXISTS = {
+  code: 'ROOM_ALREADY_EXISTS',
+  message: 'Room with the specified number and hotel already exists.',
+}
+
 const UNAUTHORIZED  = {
   code: 'UNAUTHORIZED',
-  message: 'User not authorized.'
+  message: 'User is not authorized.'
 }
 
 const FORBIDDEN = {
@@ -69,12 +79,14 @@ module.exports = {
   INVALID_TOKEN,
   USER_NOT_FOUND,
   BAD_TOKEN,
+  BAD_RECOVERY_CODE,
   INTERNAL_SERVER_ERROR,
   USER_DOES_NOT_HAVE_AN_IMAGE,
   COUNTRY_NOT_FOUND,
   CITY_NOT_FOUND,
   HOTEL_NOT_FOUND,
   ROOM_NOT_FOUND,
+  ROOM_ALREADY_EXISTS,
   UNAUTHORIZED,
   FORBIDDEN,
 }

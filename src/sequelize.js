@@ -11,6 +11,7 @@ const {
 const sequelize = new Sequelize(DATABASE_NAME, DATABASE_USERNAME, DATABASE_PASSWORD, {
   host: DATABASE_HOST,
   dialect: DATABASE_DIALECT,
+  logging: false,
 })
 
 module.exports = sequelize
