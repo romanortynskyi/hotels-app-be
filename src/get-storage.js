@@ -32,6 +32,4 @@ const getStorage = () => {
   return storage
 }
 
-
-
 module.exports = getStorage

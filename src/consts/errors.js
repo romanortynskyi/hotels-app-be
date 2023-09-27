@@ -58,9 +58,14 @@ const ROOM_NOT_FOUND = {
   message: 'Room with the specified id does not exist.',
 }
 
+const ROOM_ALREADY_EXISTS = {
+  code: 'ROOM_ALREADY_EXISTS',
+  message: 'Room with the specified number and hotel already exists.',
+}
+
 const UNAUTHORIZED  = {
   code: 'UNAUTHORIZED',
-  message: 'User not authorized.'
+  message: 'User is not authorized.'
 }
 
 const FORBIDDEN = {
@@ -81,6 +86,7 @@ module.exports = {
   CITY_NOT_FOUND,
   HOTEL_NOT_FOUND,
   ROOM_NOT_FOUND,
+  ROOM_ALREADY_EXISTS,
   UNAUTHORIZED,
   FORBIDDEN,
 }

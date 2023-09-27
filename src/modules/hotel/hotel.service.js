@@ -99,7 +99,7 @@ const hotelService = {
           LEFT JOIN "Cities" "city" ON "city"."id"="hotel"."CityId"
           LEFT JOIN "Images" "image" ON "image"."id"="hotel"."ImageId"
           WHERE "city"."id" = :cityId
-          AND "room"."id" IN (
+          AND "room"."id" NOT IN (
             SELECT
               "room"."id"
             FROM "Rooms" "room"

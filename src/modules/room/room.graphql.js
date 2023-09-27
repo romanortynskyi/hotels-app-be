@@ -32,6 +32,7 @@ const roomQueries = `#graphql
 
 const roomMutations = `#graphql
   addRoom(input: RoomInput!): Room!
+  updateRoom(id: Int!, input: RoomInput!): Room!
 `
 
 module.exports = {

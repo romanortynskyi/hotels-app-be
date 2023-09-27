@@ -12,6 +12,7 @@ const roomQuery = {
 
 const roomMutation = {
   addRoom: (_, args) => roomService.addRoom(args.input),
+  updateRoom: (_, args) => roomService.updateRoom(args.id, args.input),
 }
 
 module.exports = {
